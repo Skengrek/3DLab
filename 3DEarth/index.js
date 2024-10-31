@@ -8,6 +8,8 @@ const renderer = new THREE.WebGLRenderer({
     antialias: true,
 });
 renderer.setSize(width, height);
+renderer.toneMapping = THREE.ACESFilmicToneMapping
+renderer.outputColorSpace = THREE.SRGBColorSpace
 document.body.appendChild(renderer.domElement);
 
 const fov = 75;
@@ -41,7 +43,7 @@ earthGroup.add(lightsMesh)
 const cloudsMat = new THREE.MeshStandardMaterial({
     map: loader.load("./assets/img/earthcloudmaptrans.jpg"),
     transparent:true,
-    opacity:0.2,
+    opacity:0.8,
     blending: THREE.AdditiveBlending
 })
 const cloudMesh = new THREE.Mesh(geo, cloudsMat)
@@ -54,11 +56,10 @@ const meshSat = new THREE.Mesh(geoSat, matSat);
 meshSat.position.set(0, 1, 0)
 earth.add(meshSat)
 
+const sunLight = new THREE.DirectionalLight(0xffffff, 0.2);
+sunLight.position.set(-2, 0.5, 1.5);
+scene.add(sunLight);
 
-// Lights
-const sun = new THREE.DirectionalLight(0xffffff, 0.3)
-sun.position.set(-2, 0.5, 1.5)
-scene.add(sun);
 
 const hemiLight = new THREE.HemisphereLight(0xffffff, 0x000000, 0.07)
 scene.add(hemiLight);
