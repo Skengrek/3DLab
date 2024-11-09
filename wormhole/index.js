@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import {OrbitControls} from "jsm/controls/OrbitControls.js"
+import spline from './spline.js'
 
 const width = window.innerWidth
 const height = window.innerHeight
@@ -13,43 +13,43 @@ document.body.appendChild(renderer.domElement);
 const fov = 75;
 const aspect = width/height;
 const near = 0.1;
-const far = 10;
+const far = 100;
 const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 camera.position.z = 4;
 
 const scene = new THREE.Scene();
 
-const geo = new THREE.IcosahedronGeometry(1.0, 2);
-const mat = new THREE.MeshStandardMaterial({color: 0xffffff, flatShading:true});
-const mesh = new THREE.Mesh(geo, mat);
-scene.add(mesh);
+const geometry = new THREE.TubeGeometry(spline, 222, 0.65, 16, true);
+const material = new THREE.MeshStandardMaterial({
+    color:0xFF0000,
+    side: THREE.DoubleSide,
+    wireframe: true,
+});
+const line = new THREE.Mesh(geometry, material);
+scene.add(line);
 
-const wireMat = new THREE.MeshBasicMaterial({color: 0x00ff00, wireframe:true})
-const wireMesh = new THREE.Mesh(geo, wireMat);
-wireMesh.scale.setScalar(1.01)
-mesh.add(wireMesh)
+function updateCamera(t) {
+    const time = t * 0.2;
+    const looptime = 10 * 1000;
+    const p = (time % looptime) / looptime;
+    const pos = geometry.parameters.path.getPointAt(p);
+    const lookAt = geometry.parameters.path.getPointAt((p + 0.03) % 1);
+    camera.position.copy(pos);
+    console.log(pos, lookAt)
+    camera.lookAt(lookAt);
+}
 
-const geoSat = new THREE.IcosahedronGeometry(0.2, 2);
-const matSat = new THREE.MeshStandardMaterial({color: 0xff00ff, flatShading:true});
-const meshSat = new THREE.Mesh(geoSat, matSat);
-meshSat.position.set(0, 1, 0)
-mesh.add(meshSat)
+
+
 // Lights
-const hemiLight = new THREE.HemisphereLight(0xffffbb, 0x000000, 2)
-hemiLight.position.set(0, 5, 0)
+const hemiLight = new THREE.HemisphereLight(0xffffbb, 0x000000, 2);
+hemiLight.position.set(0, 5, 0);
 scene.add(hemiLight);
-
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.03;
 
 function animate(t=0){
     requestAnimationFrame(animate);
-    mesh.rotation.y = t*0.0005
-    
-    meshSat.position.x = 1*Math.cos(t*0.1*Math.PI/180)+1*Math.sin(t*0.1*Math.PI/180)
-    meshSat.position.y = -1*Math.sin(t*0.1*Math.PI/180)+1*Math.cos(t*0.1*Math.PI/180)
-    controls.update()
-    renderer.render(scene, camera)
+    updateCamera(t);
+    // controls.update();
+    renderer.render(scene, camera);
 }
-animate()
+animate();
