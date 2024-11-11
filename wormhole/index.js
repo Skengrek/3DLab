@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import spline from './spline.js'
+import postProcessing from './postProcessing.js'
 
 const width = window.innerWidth
 const height = window.innerHeight
@@ -19,14 +20,9 @@ camera.position.z = 4;
 
 const scene = new THREE.Scene();
 scene.fog = new THREE.FogExp2(0x000000, 0.3)
+const composer = postProcessing(width, height, scene, camera, renderer)
+
 const geometry = new THREE.TubeGeometry(spline, 222, 0.65, 16, true);
-const material = new THREE.MeshBasicMaterial({
-    color:0xFF0000,
-    side: THREE.DoubleSide,
-    wireframe: true,
-});
-const tube = new THREE.Mesh(geometry, material);
-// scene.add(tube);
 
 const edges = new THREE.EdgesGeometry(geometry, 0.2);
 const edgesMat = new THREE.LineBasicMaterial({color: 0x00FF00});
@@ -70,14 +66,13 @@ function updateCamera(t) {
     const pos = geometry.parameters.path.getPointAt(p);
     const lookAt = geometry.parameters.path.getPointAt((p + 0.03) % 1);
     camera.position.copy(pos);
-    console.log(pos, lookAt)
     camera.lookAt(lookAt);
 }
 
 function animate(t=0){
     requestAnimationFrame(animate);
     updateCamera(t);
-    // controls.update();
-    renderer.render(scene, camera);
+    composer.render(scene, camera);
+    // renderer.render(scene, camera);
 }
 animate();
