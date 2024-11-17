@@ -26,7 +26,9 @@ function init() {
   const sceneA = getFXScene({
     renderer,
     material: materialA,
-    clearColor: 0x000000
+    clearColor: 0x000000,
+    needsAnimatedColor: true,
+    clearColor: 0xfbfbfb,
   });
   const sceneB = getFXScene({
     renderer,

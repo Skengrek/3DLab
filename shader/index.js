@@ -13,7 +13,7 @@ document.body.appendChild(renderer.domElement);
 const fov = 75;
 const aspect = width/height;
 const near = 0.1;
-const far = 10;
+const far = 1000;
 const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 camera.position.z = 4;
 
